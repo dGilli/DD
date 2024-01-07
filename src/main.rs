@@ -10,6 +10,7 @@ fn main() {
 fn App(cx: Scope) -> Element {
     let start_coords = use_state(&cx, || (0f32, 0f32));
     let end_coords = use_state(&cx, || (0f32, 0f32));
+    let first_mousedown = use_state(&cx, || false);
 
     cx.render(rsx! {
         div {
@@ -24,6 +25,7 @@ fn App(cx: Scope) -> Element {
                 let mouse_y = event.client_y;
                 log::info!("Mouse position: x = {mouse_x}, y = {mouse_y}");
                 start_coords.set((mouse_x as f32, mouse_y as f32));
+                first_mousedown.set(true);
             },
             svg {
                 width: "100%",
@@ -34,7 +36,8 @@ fn App(cx: Scope) -> Element {
                     x2: "{end_coords.0}",
                     y2: "{end_coords.1}",
                     stroke: "black",
-                    stroke_width: "2"
+                    stroke_width: "2",
+                    style: if *first_mousedown.get() { "visibility: visible;" } else { "visibility: hidden;" },
                 }
             }
         }
