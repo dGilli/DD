@@ -1,10 +1,19 @@
 #![allow(non_snake_case)]
 use dioxus::prelude::*;
+use dioxus_desktop::{Config, WindowBuilder};
 use log::{info, LevelFilter};
+use std::fs;
 
 fn main() {
     dioxus_logger::init(LevelFilter::Info).expect("failed to init logger");
-    dioxus_desktop::launch(App);
+    dioxus_desktop::launch_cfg(
+        App,
+        Config::default().with_window(
+            WindowBuilder::new()
+                .with_maximized(true)
+                .with_title("DD"),
+        ),
+    );
 }
 
 fn App(cx: Scope) -> Element {
@@ -14,9 +23,6 @@ fn App(cx: Scope) -> Element {
 
     cx.render(rsx! {
         div {
-            style: "position: absolute; top: 0; left: 0",
-            width: "100%",
-            height: "100%",
             onmousemove: move |event| {
                 end_coords.set((event.client_x as f32, event.client_y as f32));
             },
@@ -27,6 +33,9 @@ fn App(cx: Scope) -> Element {
                 start_coords.set((mouse_x as f32, mouse_y as f32));
                 first_mousedown.set(true);
             },
+            style: "position: absolute; top: 0; left: 0",
+            width: "100%",
+            height: "100%",
             svg {
                 width: "100%",
                 height: "100%",
@@ -39,7 +48,7 @@ fn App(cx: Scope) -> Element {
                     stroke_width: "2",
                     style: if *first_mousedown.get() { "visibility: visible;" } else { "visibility: hidden;" },
                 }
-            }
+            },
         }
     })
 }
